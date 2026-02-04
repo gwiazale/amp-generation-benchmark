@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMP Generation Benchmark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #0369a1;
+            --accent-light: #e0f2fe;
+            --accent-hover: #0284c7;
+            --border: #e2e8f0;
+            --szczurek: #7c3aed;
+            --szczurek-light: #ede9fe;
+            --green: #059669;
+            --green-light: #d1fae5;
+            --orange: #d97706;
+            --orange-light: #fef3c7;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            padding: 3rem 0 2.5rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .lab-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--szczurek);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            padding: 0.35rem 0.75rem;
+            background: var(--szczurek-light);
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        
+        .lab-link:hover {
+            background: var(--szczurek);
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+        
+        .subtitle {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 620px;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+        }
+        
+        .stat-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        main { padding: 2.5rem 0; }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .section-badge {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.75rem;
+        }
+        
+        .badge-ready {
+            background: var(--green-light);
+            color: var(--green);
+        }
+        
+        .badge-wip {
+            background: var(--orange-light);
+            color: var(--orange);
+        }
+        
+        .section-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .table-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+        
+        .method-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        
+        .method-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .method-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .szczurek-tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--szczurek);
+            background: var(--szczurek-light);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            margin-left: 0.5rem;
+        }
+        
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .links {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .links a {
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .links a:hover { text-decoration: underline; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 0.4rem 0.75rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        
+        .btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        /* Prototypes section */
+        .prototypes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        
+        .prototype-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .prototype-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .prototype-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-grow: 1;
+        }
+        
+        .prototype-card .meta {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .tag-active {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            background: var(--green-light);
+            color: var(--green);
+        }
+        
+        .tag-inactive {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            background: var(--orange-light);
+            color: var(--orange);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .empty-state a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .empty-state a:hover { text-decoration: underline; }
+        
+        /* Info section */
+        .info-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        
+        .info-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card p, .info-card code {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .info-card code {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--bg-primary);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        footer {
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        footer a:hover { text-decoration: underline; }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 700px) {
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(4), td:nth-child(4) { display: none; }
+            .stats-row { flex-wrap: wrap; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="https://www.helmholtz-munich.de/en/aih/ewa-szczurek" class="lab-link" target="_blank">
+                Szczurek Lab @ Helmholtz Munich
+            </a>
+            <h1>AMP Generation Benchmark</h1>
+            <p class="subtitle">A benchmark for machine learning methods that generate antimicrobial peptides. Evaluate de novo generation and analog improvement tasks.</p>
+            
+            <div class="stats-row">
+                <div class="stat">
+                    <span class="stat-value" id="total-methods">—</span>
+                    <span class="stat-label">methods</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="total-sequences">—</span>
+                    <span class="stat-label">sequences</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">FASTA</span>
+                    <span class="stat-label">format</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            
+            <!-- De Novo Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        De Novo Generation
+                        <span class="section-badge badge-ready">Available</span>
+                    </h2>
+                </div>
+                <p class="section-desc">
+                    Methods that generate AMPs from scratch without input prototypes.
+                </p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Sequences</th>
+                                <th>Length</th>
+                                <th>References</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="denovo-body">
+                            <tr><td colspan="5" class="loading">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Analog Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        Analog Generation
+                        <span class="section-badge badge-wip">Coming Soon</span>
+                    </h2>
+                </div>
+                <p class="section-desc">
+                    Methods that improve given prototype peptides. Download the prototypes below and submit your results.
+                </p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Sequences</th>
+                                <th>Length</th>
+                                <th>References</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analog-body">
+                            <tr><td colspan="5" class="empty-state">
+                                No submissions yet. <a href="https://github.com" target="_blank">Submit your method →</a>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Prototypes Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Prototypes for Analog Generation</h2>
+                </div>
+                <p class="section-desc">
+                    Challenge your method: download these prototype peptides and generate improved analogs. Submit your results via pull request.
+                </p>
+                <div class="prototypes-grid">
+                    <div class="prototype-card">
+                        <h3><span class="tag-active">Active</span> Prototypes</h3>
+                        <p>Active AMPs (MIC &lt; 32 μg/ml against at least one strain). Challenge: generate analogs with improved activity or broader spectrum.</p>
+                        <div class="meta">500 sequences</div>
+                        <a href="prototypes/prototype-active.fasta" download class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download FASTA
+                        </a>
+                    </div>
+                    <div class="prototype-card">
+                        <h3><span class="tag-inactive">Inactive</span> Prototypes</h3>
+                        <p>Inactive peptides (MIC &gt; 128 μg/ml against all tested strains). Challenge: generate analogs that gain antimicrobial activity.</p>
+                        <div class="meta">500 sequences</div>
+                        <a href="prototypes/prototype-inactive.fasta" download class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download FASTA
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info Section -->
+            <div class="info-section">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>File Format</h3>
+                        <p>All datasets are standard FASTA. Some include metadata in headers (e.g., predicted properties).</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Quick Start</h3>
+                        <p><code>from Bio import SeqIO</code><br>
+                        <code>seqs = SeqIO.parse("file.fasta", "fasta")</code></p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Contributing</h3>
+                        <p>Add your method: submit a PR with the FASTA file and a row in <code>references.csv</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>
+                AMP Generation Benchmark · 
+                <a href="https://www.helmholtz-munich.de/en/aih/ewa-szczurek" target="_blank">Szczurek Lab</a> · 
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        async function loadDatasets() {
+            try {
+                const response = await fetch('references.csv');
+                const text = await response.text();
+                const rows = text.trim().split('\n').slice(1); // Skip header
+                
+                let totalSeqs = 0;
+                let totalMethods = 0;
+                
+                const denovoRows = [];
+                const analogRows = [];
+                
+                rows.forEach(row => {
+                    const cols = row.split(',');
+                    const [method, displayName, task, description, doi, github, sequences, lengthMin, lengthMax, lab] = cols;
+                    
+                    const seqCount = parseInt(sequences) || 0;
+                    totalSeqs += seqCount;
+                    totalMethods++;
+                    
+                    const rowData = { method, displayName, task, description, doi, github, seqCount, lengthMin, lengthMax, lab };
+                    
+                    if (task === 'denovo') {
+                        denovoRows.push(rowData);
+                    } else if (task === 'analog') {
+                        analogRows.push(rowData);
+                    }
+                });
+                
+                // Render de novo table
+                renderTable('denovo-body', denovoRows, 'data/denovo');
+                
+                // Render analog table
+                if (analogRows.length > 0) {
+                    renderTable('analog-body', analogRows, 'data/analog');
+                }
+                
+                // Update stats
+                document.getElementById('total-methods').textContent = totalMethods;
+                document.getElementById('total-sequences').textContent = (totalSeqs / 1000).toFixed(0) + 'K+';
+                
+            } catch (error) {
+                console.error('Failed to load datasets:', error);
+                document.getElementById('denovo-body').innerHTML = 
+                    '<tr><td colspan="5" class="loading">Failed to load datasets.</td></tr>';
+            }
+        }
+        
+        function renderTable(tbodyId, rows, basePath) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+            
+            rows.forEach(({ method, displayName, description, doi, github, seqCount, lengthMin, lengthMax, lab }) => {
+                const tr = document.createElement('tr');
+                
+                const szczurekBadge = lab === 'szczurek' ? '<span class="szczurek-tag">Szczurek Lab</span>' : '';
+                
+                let refs = [];
+                if (doi) refs.push(`<a href="https://doi.org/${doi}" target="_blank">Paper</a>`);
+                if (github) refs.push(`<a href="${github}" target="_blank">GitHub</a>`);
+                const refsHtml = refs.length ? refs.join(' · ') : '<span style="color:#94a3b8">—</span>';
+                
+                const lengthDisplay = lengthMin === lengthMax ? lengthMin : `${lengthMin}–${lengthMax}`;
+                
+                tr.innerHTML = `
+                    <td>
+                        <div class="method-cell">
+                            <span class="method-name">${displayName}${szczurekBadge}</span>
+                            <span class="method-desc">${description}</span>
+                        </div>
+                    </td>
+                    <td class="mono">${seqCount.toLocaleString()}</td>
+                    <td class="mono">${lengthDisplay}</td>
+                    <td class="links">${refsHtml}</td>
+                    <td>
+                        <a href="${basePath}/${method}.fasta" download class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            FASTA
+                        </a>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadDatasets);
+    </script>
+</body>
+</html>
