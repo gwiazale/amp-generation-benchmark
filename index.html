@@ -388,8 +388,7 @@
         }
         
         @media (max-width: 700px) {
-            th:nth-child(3), td:nth-child(3),
-            th:nth-child(4), td:nth-child(4) { display: none; }
+            th:nth-child(3), td:nth-child(3) { display: none; }
             .stats-row { flex-wrap: wrap; gap: 1rem; }
         }
     </style>
@@ -402,7 +401,7 @@
             </a>
             <h1>AMP Generation Benchmark</h1>
             <p class="subtitle">A benchmark for machine learning methods that generate antimicrobial peptides. Evaluate de novo generation and analog improvement tasks.</p>
-            
+
             <div class="stats-row">
                 <div class="stat">
                     <span class="stat-value" id="total-methods">—</span>
@@ -419,10 +418,10 @@
             </div>
         </div>
     </header>
-    
+
     <main>
         <div class="container">
-            
+
             <!-- De Novo Section -->
             <div class="section">
                 <div class="section-header">
@@ -440,18 +439,17 @@
                             <tr>
                                 <th>Method</th>
                                 <th>Sequences</th>
-                                <th>Length</th>
                                 <th>References</th>
                                 <th>Download</th>
                             </tr>
                         </thead>
                         <tbody id="denovo-body">
-                            <tr><td colspan="5" class="loading">Loading...</td></tr>
+                            <tr><td colspan="4" class="loading">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            
+
             <!-- Analog Section -->
             <div class="section">
                 <div class="section-header">
@@ -469,20 +467,19 @@
                             <tr>
                                 <th>Method</th>
                                 <th>Sequences</th>
-                                <th>Length</th>
                                 <th>References</th>
                                 <th>Download</th>
                             </tr>
                         </thead>
                         <tbody id="analog-body">
-                            <tr><td colspan="5" class="empty-state">
+                            <tr><td colspan="4" class="empty-state">
                                 No submissions yet. <a href="https://github.com" target="_blank">Submit your method →</a>
                             </td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            
+
             <!-- Prototypes Section -->
             <div class="section">
                 <div class="section-header">
@@ -516,7 +513,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Info Section -->
             <div class="info-section">
                 <div class="info-grid">
@@ -537,82 +534,83 @@
             </div>
         </div>
     </main>
-    
+
     <footer>
         <div class="container">
             <p>
-                AMP Generation Benchmark · 
-                <a href="https://www.helmholtz-munich.de/en/aih/ewa-szczurek" target="_blank">Szczurek Lab</a> · 
+                AMP Generation Benchmark ·
+                <a href="https://www.helmholtz-munich.de/en/aih/ewa-szczurek" target="_blank">Szczurek Lab</a> ·
                 <a href="https://github.com" target="_blank">GitHub</a>
             </p>
         </div>
     </footer>
-    
+
     <script>
         async function loadDatasets() {
             try {
                 const response = await fetch('references.csv');
                 const text = await response.text();
                 const rows = text.trim().split('\n').slice(1); // Skip header
-                
+
                 let totalSeqs = 0;
                 let totalMethods = 0;
-                
+
                 const denovoRows = [];
                 const analogRows = [];
-                
+
                 rows.forEach(row => {
                     const cols = row.split(',');
-                    const [method, displayName, task, description, doi, github, sequences, lengthMin, lengthMax, lab] = cols;
-                    
+                    const [method, displayName, task, sequences, description, doi, github, lab] = cols;
+
                     const seqCount = parseInt(sequences) || 0;
                     totalSeqs += seqCount;
                     totalMethods++;
-                    
-                    const rowData = { method, displayName, task, description, doi, github, seqCount, lengthMin, lengthMax, lab };
-                    
+
+                    const rowData = { method, displayName, task, description, doi, github, seqCount, lab };
+
                     if (task === 'denovo') {
                         denovoRows.push(rowData);
                     } else if (task === 'analog') {
                         analogRows.push(rowData);
                     }
                 });
-                
+
                 // Render de novo table
                 renderTable('denovo-body', denovoRows, 'data/denovo');
-                
+
                 // Render analog table
                 if (analogRows.length > 0) {
                     renderTable('analog-body', analogRows, 'data/analog');
                 }
-                
+
                 // Update stats
                 document.getElementById('total-methods').textContent = totalMethods;
                 document.getElementById('total-sequences').textContent = (totalSeqs / 1000).toFixed(0) + 'K+';
-                
+
             } catch (error) {
                 console.error('Failed to load datasets:', error);
-                document.getElementById('denovo-body').innerHTML = 
-                    '<tr><td colspan="5" class="loading">Failed to load datasets.</td></tr>';
+                document.getElementById('denovo-body').innerHTML =
+                    '<tr><td colspan="4" class="loading">Failed to load datasets.</td></tr>';
             }
         }
-        
+
         function renderTable(tbodyId, rows, basePath) {
             const tbody = document.getElementById(tbodyId);
             tbody.innerHTML = '';
-            
-            rows.forEach(({ method, displayName, description, doi, github, seqCount, lengthMin, lengthMax, lab }) => {
+
+            rows.forEach(({ method, displayName, description, doi, github, seqCount, lab }) => {
                 const tr = document.createElement('tr');
-                
+
                 const szczurekBadge = lab === 'szczurek' ? '<span class="szczurek-tag">Szczurek Lab</span>' : '';
-                
+
                 let refs = [];
-                if (doi) refs.push(`<a href="https://doi.org/${doi}" target="_blank">Paper</a>`);
+                if (doi) {
+                    const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
+                    refs.push(`<a href="${doiUrl}" target="_blank">Paper</a>`);
+                }
                 if (github) refs.push(`<a href="${github}" target="_blank">GitHub</a>`);
                 const refsHtml = refs.length ? refs.join(' &middot; ') : '<span style="color:#94a3b8">—</span>';
-                
-                const lengthDisplay = lengthMin === lengthMax ? lengthMin : `${lengthMin}–${lengthMax}`;
-                
+
                 tr.innerHTML = `
                     <td>
                         <div class="method-cell">
@@ -621,7 +619,6 @@
                         </div>
                     </td>
                     <td class="mono">${seqCount.toLocaleString()}</td>
-                    <td class="mono">${lengthDisplay}</td>
                     <td class="links">${refsHtml}</td>
                     <td>
                         <a href="${basePath}/${method}.fasta" download class="btn">
@@ -632,11 +629,11 @@
                         </a>
                     </td>
                 `;
-                
+
                 tbody.appendChild(tr);
             });
         }
-        
+
         document.addEventListener('DOMContentLoaded', loadDatasets);
     </script>
 </body>
