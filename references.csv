@@ -1,11 +1,10 @@
 method,display_name,task,description,doi,github,sequences,length_min,length_max,lab
-omegamp-u,OmegAMP-U,denovo,Unconditional generation,10.48550/arXiv.2504.17247,https://github.com/szczurek-lab/omegamp,149504,1,100,szczurek
-omegamp-t,OmegAMP-T,denovo,Target physicochemical properties,10.48550/arXiv.2504.17247,https://github.com/szczurek-lab/omegamp,50000,4,100,szczurek
-omegamp-p,OmegAMP-P,denovo,Population-guided generation,10.48550/arXiv.2504.17247,https://github.com/szczurek-lab/omegamp,49152,1,100,szczurek
+omegamp-u,OmegAMP-U,denovo,"Diffusion-based, unconditional generation",10.48550/arXiv.2504.17247,https://github.com/szczurek-lab/omegamp,149504,1,100,szczurek
+omegamp-t,OmegAMP-T,denovo,"Diffusion-based, targeted generation",10.48550/arXiv.2504.17247,https://github.com/szczurek-lab/omegamp,50000,4,100,szczurek
+omegamp-p,OmegAMP-P,denovo,"Diffusion-based, prototype-guided generation",10.48550/arXiv.2504.17247,https://github.com/szczurek-lab/omegamp,49152,1,100,szczurek
 hydramp,HydrAMP,denovo,Conditional VAE for AMP generation,10.1038/s41467-023-36994-z,https://github.com/szczurek-lab/hydramp,50000,3,25,szczurek
-cpldiff,CPL-Diff,denovo,Fixed-length diffusion model,10.1002/advs.202412926,https://github.com/luozhenjie1997/CPL-Diff,49985,5,50,
-amp-gan,PepGAN,denovo,Activity-aware GAN,10.1021/acsomega.0c02088,https://github.com/tsudalab/PepGAN,150000,1,32,
-amp-diffusion,AMP-Diffusion,denovo,Latent diffusion with pLM,10.1038/s41551-021-00689-x,,47671,15,40,
-amp-lm,AMP-LM,denovo,Language model generation,,,25608,1,25,
-amp-muller,Müller-LSTM,denovo,RNN-based peptide design,10.1021/acs.jcim.7b00414,https://github.com/alexarnimueller/modlAMP,1052,7,25,
-diff-amp,Diff-AMP,denovo,Diffusion-based AMP design,,,133,18,18,
+cpldiff,CPL-Diff,denovo,Diffusion model with length control,https://doi.org/10.1002/advs.202412926,https://github.com/luozhenjie1997/CPL-Diff,49985,5,50,
+amp-gan,AMPGAN-v2,denovo,AMPGAN v2,https://pubs.acs.org/doi/10.1021/acs.jcim.0c01441,https://gitlab.com/vail-uvm/amp-gan,150000,1,32,
+amp-diffusion,AMP-Diffusion,denovo,Latent diffusion with pLM,https://doi.org/10.1016/j.celbio.2025.100183,https://github.com/programmablebio/amp-diffusion,47671,15,40,
+amp-muller,Müller-LSTM,denovo,RNN-based peptide design,https://pubs.acs.org/doi/abs/10.1021/acs.jcim.7b00414,https://github.com/alexarnimueller/LSTM_peptides,1052,7,25,
+diff-amp,Diff-AMP,denovo,Diffusion-based AMP design,https://doi.org/10.1093/bib/bbae078,https://github.com/wrab12/diff-amp,133,18,18,
