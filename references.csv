@@ -15,5 +15,10 @@ hyformer,Hyformer,denovo,50000,Hybrid transformer for conditional AMP generation
 mlpeptide,Capecchi et al.,denovo,9979,RNN with discriminator-guided filtering and positive-only learning for active non-toxic AMPs,10.1039/D1SC01713F,https://github.com/reymond-group/MLpeptide/,
 mmcd,MMCD,denovo,18892,Multi-modal contrastive diffusion for sequence-structure co-generation,10.48550/arXiv.2312.15665,https://github.com/wyky481l/MMCD,
 basic-cvae,Basic CVAE,denovo,50000,Basic conditional VAE baseline (ablation from HydrAMP),10.1038/s41467-023-36994-z,https://github.com/szczurek-lab/hydramp,szczurek
-pepcvae,PepCVAE,denovo,50000,Semi-supervised VAE with disentangled antimicrobial attribute space,10.48550/arXiv.1810.07743,https://github.com/IBM/controlled-peptide-generation,
+pepcvae,PepCVAE,denovo,50000,Semi-supervised VAE with disentangled antimicrobial attribute space,10.48550/arXiv.1810.07743,https://github.com/szczurek-lab/hydramp,
 zeng,Zeng et al.,denovo,2685,GPT-based pLM with discriminator-guided filtering,10.1101/2023.11.20.567789,https://github.com/zishuozeng/GPT_protein_design/blob/main/AMP/amp_pred.csv,
+hydramp,HydrAMP,validated,34,34 peptides tested on 5 ATCC strains incl. MRSA and MDR gram-negatives,10.1038/s41467-023-36994-z,https://github.com/szczurek-lab/hydramp,szczurek
+class,CLaSS,validated,21,21 C-term amidated peptides tested on S. aureus and E. coli,10.1038/s41551-021-00689-x,https://github.com/IBM/controlled-peptide-generation,
+joker,Joker,validated,12,12 peptides tested on E. coli and S. aureus,10.1016/j.bbagen.2018.06.011,https://github.com/williamfp7/Joker,
+amp-diffusion,AMP-Diffusion,validated,35,35 peptides tested on 11 strains incl. clinical MDR isolates,10.1126/sciadv.adp7171,https://github.com/Wangyj2023/PepDiffusion,
+deep-amp,DeepAMP,validated,30,30 CFPS-expressed peptides; initial screen + ESKAPE panel,10.1038/s41467-023-42434-9,https://github.com/amirpandi/Deep_AMP,
