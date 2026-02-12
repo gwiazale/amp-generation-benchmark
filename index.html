@@ -599,11 +599,32 @@
     </footer>
 
     <script>
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const vals = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+                return obj;
+            });
+        }
+
+        function buildRefs(row) {
+            let refs = [];
+            if (row.doi) {
+                const url = row.doi.startsWith('http') ? row.doi : `https://doi.org/${row.doi}`;
+                refs.push(`<a href="${url}" target="_blank">Paper</a>`);
+            }
+            if (row.github) refs.push(`<a href="${row.github}" target="_blank">GitHub</a>`);
+            return refs.length ? refs.join(' &middot; ') : '<span style="color:#94a3b8">—</span>';
+        }
+
         async function loadDatasets() {
             try {
                 const response = await fetch('references.csv');
                 const text = await response.text();
-                const rows = text.trim().split('\n').slice(1); // Skip header
+                const data = parseCSV(text);
 
                 let totalSeqs = 0;
                 let totalMethods = 0;
@@ -613,53 +634,33 @@
                 const analogRows = [];
                 const validatedRows = [];
 
-                rows.forEach(row => {
-                    // Handle commas inside brackets/descriptions
-                    const cols = row.split(',');
-                    const method = cols[0];
-                    const displayName = cols[1];
-                    const task = cols[2];
-                    const sequences = cols[3];
-                    const description = cols[4];
-                    const doi = cols[5];
-                    const github = cols[6];
-                    const lab = cols[7];
-                    const strains = cols[8];
-                    const micUnit = cols[9];
-                    const completeness = cols[10];
+                data.forEach(row => {
+                    const seqCount = parseInt(row.sequences) || 0;
 
-                    const seqCount = parseInt(sequences) || 0;
-
-                    const rowData = { method, displayName, task, description, doi, github, seqCount, lab, strains: parseInt(strains) || 0, micUnit, completeness };
-
-                    if (task === 'denovo') {
+                    if (row.task === 'denovo') {
                         totalSeqs += seqCount;
                         totalMethods++;
-                        denovoRows.push(rowData);
-                    } else if (task === 'analog') {
+                        denovoRows.push(row);
+                    } else if (row.task === 'analog') {
                         totalSeqs += seqCount;
                         totalMethods++;
-                        analogRows.push(rowData);
-                    } else if (task === 'validated') {
+                        analogRows.push(row);
+                    } else if (row.task === 'validated') {
                         totalValidated += seqCount;
-                        validatedRows.push(rowData);
+                        validatedRows.push(row);
                     }
                 });
 
-                // Render de novo table
                 renderTable('denovo-body', denovoRows, 'data/denovo');
 
-                // Render analog table
                 if (analogRows.length > 0) {
                     renderTable('analog-body', analogRows, 'data/analog');
                 }
 
-                // Render validated table
                 if (validatedRows.length > 0) {
                     renderValidatedTable('validated-body', validatedRows);
                 }
 
-                // Update stats
                 document.getElementById('total-methods').textContent = totalMethods;
                 document.getElementById('total-sequences').textContent = (totalSeqs / 1000).toFixed(0) + 'K+';
                 document.getElementById('total-validated').textContent = totalValidated;
@@ -675,30 +676,22 @@
             const tbody = document.getElementById(tbodyId);
             tbody.innerHTML = '';
 
-            rows.forEach(({ method, displayName, description, doi, github, seqCount, lab }) => {
+            rows.forEach(row => {
                 const tr = document.createElement('tr');
-
-                const szczurekBadge = lab === 'szczurek' ? '<span class="szczurek-tag">Szczurek Lab</span>' : '';
-
-                let refs = [];
-                if (doi) {
-                    const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
-                    refs.push(`<a href="${doiUrl}" target="_blank">Paper</a>`);
-                }
-                if (github) refs.push(`<a href="${github}" target="_blank">GitHub</a>`);
-                const refsHtml = refs.length ? refs.join(' &middot; ') : '<span style="color:#94a3b8">—</span>';
+                const szczurekBadge = row.lab === 'szczurek' ? '<span class="szczurek-tag">Szczurek Lab</span>' : '';
+                const seqCount = parseInt(row.sequences) || 0;
 
                 tr.innerHTML = `
                     <td>
                         <div class="method-cell">
-                            <span class="method-name">${displayName}${szczurekBadge}</span>
-                            <span class="method-desc">${description}</span>
+                            <span class="method-name">${row.display_name}${szczurekBadge}</span>
+                            <span class="method-desc">${row.description}</span>
                         </div>
                     </td>
                     <td class="mono">${seqCount.toLocaleString()}</td>
-                    <td class="links">${refsHtml}</td>
+                    <td class="links">${buildRefs(row)}</td>
                     <td>
-                        <a href="${basePath}/${method}.fasta" download class="btn">
+                        <a href="${basePath}/${row.method}.fasta" download class="btn">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
@@ -706,7 +699,6 @@
                         </a>
                     </td>
                 `;
-
                 tbody.appendChild(tr);
             });
         }
@@ -715,37 +707,31 @@
             const tbody = document.getElementById(tbodyId);
             tbody.innerHTML = '';
 
-            rows.forEach(({ method, displayName, description, doi, github, seqCount, lab, strains, micUnit, completeness }) => {
+            rows.forEach(row => {
                 const tr = document.createElement('tr');
+                const szczurekBadge = row.lab === 'szczurek' ? '<span class="szczurek-tag">Szczurek Lab</span>' : '';
 
-                const szczurekBadge = lab === 'szczurek' ? '<span class="szczurek-tag">Szczurek Lab</span>' : '';
-                const completeBadge = completeness === 'complete'
+                const completeBadge = row.completeness === 'complete'
                     ? '<span class="completeness-complete">Complete</span>'
                     : '<span class="completeness-partial">Partial</span>';
 
-                let refs = [];
-                if (doi) {
-                    const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
-                    refs.push(`<a href="${doiUrl}" target="_blank">Paper</a>`);
-                }
-                if (github) refs.push(`<a href="${github}" target="_blank">GitHub</a>`);
-                const refsHtml = refs.length ? refs.join(' &middot; ') : '<span style="color:#94a3b8">—</span>';
-
-                const unitDisplay = micUnit === 'ug/mL' ? 'μg/mL' : micUnit === 'uM' ? 'μM' : micUnit;
+                const strainCount = parseInt(row.strains) || '—';
+                const unitRaw = row.mic_unit || '';
+                const unitDisplay = unitRaw === 'ug/mL' ? 'μg/mL' : unitRaw === 'uM' ? 'μM' : unitRaw || '—';
 
                 tr.innerHTML = `
                     <td>
                         <div class="method-cell">
-                            <span class="method-name">${displayName}${szczurekBadge} ${completeBadge}</span>
-                            <span class="method-desc">${description}</span>
+                            <span class="method-name">${row.display_name}${szczurekBadge} ${completeBadge}</span>
+                            <span class="method-desc">${row.description}</span>
                         </div>
                     </td>
-                    <td class="mono">${seqCount}</td>
-                    <td class="mono">${strains}</td>
+                    <td class="mono">${row.sequences}</td>
+                    <td class="mono">${strainCount}</td>
                     <td>${unitDisplay}</td>
-                    <td class="links">${refsHtml}</td>
+                    <td class="links">${buildRefs(row)}</td>
                     <td>
-                        <a href="data/validated/${method}.csv" download class="btn">
+                        <a href="data/validated/${row.method}.csv" download class="btn">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
@@ -753,7 +739,6 @@
                         </a>
                     </td>
                 `;
-
                 tbody.appendChild(tr);
             });
         }
