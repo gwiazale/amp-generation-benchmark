@@ -32,7 +32,7 @@ Peptides from generative methods that were tested in wet-lab MIC assays. Include
 | `hydramp.csv` | HydrAMP | 34 | 5 | µg/mL | Complete | 10.1038/s41467-023-36994-z |
 | `class.csv` | CLaSS | 21 | 2 | µg/mL | Complete | 10.1038/s42256-021-00306-1 |
 | `joker.csv` | Joker | 12 | 2 | µg/mL | Complete | 10.1093/bioinformatics/btac200 |
-| `amp-diffusion.csv` | AMP-Diffusion | 35 | 11 | µg/mL | Partial* | 10.1126/sciadv.adp7171 |
+| `amp-diffusion.csv` | AMP-Diffusion | 35 | 11 | µM | Partial* | 10.1126/sciadv.adp7171 |
 | `deep-amp.csv` | DeepAMP | 30 | 2 | µM | Partial* | 10.1038/s41467-023-42434-9 |
 
 \* AMP-Diffusion: sequences pending extraction from supplementary. DeepAMP: MIC values pending extraction from Supplementary Table 10.
