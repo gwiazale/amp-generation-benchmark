@@ -12,7 +12,7 @@ Visit the benchmark at: **https://szczurek-lab.github.io/amp-generation-benchmar
 
 ### 1. De Novo Generation
 
-Generate AMPs from scratch. No input required — methods produce novel peptide sequences. Each method contributes a FASTA file in `data/denovo/`.
+Generate AMPs from scratch. No input required - methods produce novel peptide sequences. Each method contributes a FASTA file in `data/denovo/`.
 
 ### 2. Analog Generation
 
@@ -20,8 +20,52 @@ Improve given prototype peptides. Download the prototype sets and generate impro
 
 | Prototype Set | Description | Download |
 |---------------|-------------|----------|
-| **Active** | AMPs with MIC ≤ 32 μg/mL — improve activity or broaden spectrum | [`prototype-active.fasta`](prototypes/prototype-active.fasta) |
-| **Inactive** | Peptides with MIC ≥ 128 μg/mL — generate analogs that gain activity | [`prototype-inactive.fasta`](prototypes/prototype-inactive.fasta) |
+| **Active** | AMPs with MIC ≤ 32 μg/mL - improve activity or broaden spectrum | [`prototype-active.fasta`](prototypes/prototype-active.fasta) |
+| **Inactive** | Peptides with MIC ≥ 128 μg/mL - generate analogs that gain activity | [`prototype-inactive.fasta`](prototypes/prototype-inactive.fasta) |
+
+Each method contributes two FASTA files in `data/analog/`: one for active prototypes and one for inactive prototypes.
+
+#### Active prototype analogs
+
+| File | Method | Sequences | Description |
+|------|--------|-----------|-------------|
+| `omegamp-a-active.fasta` | OmegAMP-A | 5,000 | Analog conditioning only |
+| `omegamp-at-active.fasta` | OmegAMP-AT | 5,000 | Analog + targeted physicochemical |
+| `omegamp-am-active.fasta` | OmegAMP-AM | 4,990 | Analog + motif-guided (G____G) |
+| `omegamp-amt-active.fasta` | OmegAMP-AMT | 4,990 | Analog + motif + targeted |
+| `hydramp-c1-active.fasta` | HydrAMP (c=1) | 708 | Conditional VAE, creativity=1 |
+| `hydramp-c2.5-active.fasta` | HydrAMP (c=2.5) | 2,053 | Conditional VAE, creativity=2.5 |
+| `hydramp-c5-active.fasta` | HydrAMP (c=5) | 2,664 | Conditional VAE, creativity=5 |
+
+#### Inactive prototype analogs
+
+| File | Method | Sequences | Description |
+|------|--------|-----------|-------------|
+| `omegamp-a-inactive.fasta` | OmegAMP-A | 5,000 | Analog conditioning only |
+| `omegamp-at-inactive.fasta` | OmegAMP-AT | 5,000 | Analog + targeted physicochemical |
+| `omegamp-am-inactive.fasta` | OmegAMP-AM | 4,940 | Analog + motif-guided (G____G) |
+| `omegamp-amt-inactive.fasta` | OmegAMP-AMT | 4,940 | Analog + motif + targeted |
+| `hydramp-c1-inactive.fasta` | HydrAMP (c=1) | 253 | Conditional VAE, creativity=1 |
+| `hydramp-c2.5-inactive.fasta` | HydrAMP (c=2.5) | 754 | Conditional VAE, creativity=2.5 |
+| `hydramp-c5-inactive.fasta` | HydrAMP (c=5) | 1,024 | Conditional VAE, creativity=5 |
+
+#### Analog FASTA format
+
+Each method produces up to 10 analogs per prototype. Headers follow this format:
+
+```
+>prototype_{PROTOTYPE_SEQUENCE}_analog_{N}
+ANALOGSEQUENCE
+```
+
+Where `N` is a 1-based index (1 through 10). Example:
+
+```
+>prototype_KKKKKKAAFAAWAAFAA_analog_1
+KKKKKKAAFLAWAAFL
+>prototype_KKKKKKAAFAAWAAFAA_analog_2
+KKKKKKLAFLAWLAFLA
+```
 
 ### 3. Experimentally Validated
 
@@ -32,7 +76,7 @@ Peptides from generative methods that were tested in wet-lab MIC assays. Include
 | `hydramp.csv` | HydrAMP | 34 | 5 | µg/mL | Complete | 10.1038/s41467-023-36994-z |
 | `class.csv` | CLaSS | 21 | 2 | µg/mL | Complete | 10.1038/s42256-021-00306-1 |
 | `joker.csv` | Joker | 12 | 2 | µg/mL | Complete | 10.1093/bioinformatics/btac200 |
-| `amp-diffusion.csv` | AMP-Diffusion | 35 | 11 | µg/mL | Partial* | 10.1126/sciadv.adp7171 |
+| `amp-diffusion.csv` | AMP-Diffusion | 35 | 11 | µM | Partial* | 10.1126/sciadv.adp7171 |
 | `deep-amp.csv` | DeepAMP | 30 | 2 | µM | Partial* | 10.1038/s41467-023-42434-9 |
 
 \* AMP-Diffusion: sequences pending extraction from supplementary. DeepAMP: MIC values pending extraction from Supplementary Table 10.
@@ -78,7 +122,11 @@ amp-generation-benchmark/
 │   │   ├── omegamp-u.fasta
 │   │   ├── hydramp.fasta
 │   │   └── ...
-│   ├── analog/                 # Analog generation outputs (FASTA)
+│   ├── analog/                 # Analog generation outputs (FASTA, split by prototype set)
+│   │   ├── omegamp-a-active.fasta
+│   │   ├── omegamp-a-inactive.fasta
+│   │   ├── hydramp-c5-active.fasta
+│   │   ├── hydramp-c5-inactive.fasta
 │   │   └── ...
 │   └── validated/              # Experimentally validated MICs (CSV)
 │       ├── hydramp.csv
@@ -97,12 +145,19 @@ amp-generation-benchmark/
 
 ### For Analog Generation
 1. Download prototypes from `prototypes/`
-2. Generate analogs for each prototype
-3. Add your FASTA file to `data/analog/`
-4. Add a row to `references.csv` with `task=analog`
+2. Generate up to 10 analogs per prototype for both active and inactive sets
+3. Format your FASTA files with standardized headers:
+   ```
+   >prototype_{PROTOTYPE_SEQUENCE}_analog_{N}
+   ANALOGSEQUENCE
+   ```
+   where `N` is 1-based (1 through 10)
+4. Create two files: `{method}-active.fasta` and `{method}-inactive.fasta`
+5. Add both files to `data/analog/`
+6. Add two rows to `references.csv` with `task=analog`, one with `prototype_set=active` and one with `prototype_set=inactive`
 
 ### For Experimentally Validated Data
-1. Get sequences from the paper/repo/supplementary — strip expression tags
+1. Get sequences from the paper/repo/supplementary - strip expression tags
 2. Identify modifications (amidation, acetylation, etc.)
 3. Normalize strain names: expand genus abbreviations, add ATCC IDs, fix typos
 4. Parse MIC values: identify censored (`>`, `<`), sentinel values, "not tested"
@@ -114,7 +169,7 @@ amp-generation-benchmark/
 ### references.csv columns
 
 ```csv
-method,display_name,task,sequences,description,doi,github,lab,strains,mic_unit,min_len,max_len,completeness
+method,display_name,task,sequences,description,doi,github,lab,strains,mic_unit,completeness,prototype_set
 ```
 
 - `method`: short identifier, matches the filename (without extension)
@@ -129,6 +184,7 @@ method,display_name,task,sequences,description,doi,github,lab,strains,mic_unit,m
 - `mic_unit`: `ug/mL` or `uM` (validated only)
 - `min_len`, `max_len`: peptide length range (optional)
 - `completeness`: `complete` or `partial` (validated only)
+- `prototype_set`: `active` or `inactive` (analog only)
 
 ## 🐍 Quick Start
 
@@ -143,6 +199,10 @@ print(f"Loaded {len(sequences)} sequences")
 # Load prototypes for analog task
 prototypes = list(SeqIO.parse("prototypes/prototype-active.fasta", "fasta"))
 print(f"Loaded {len(prototypes)} prototypes")
+
+# Load analog generations (active prototype set)
+analogs = list(SeqIO.parse("data/analog/omegamp-a-active.fasta", "fasta"))
+print(f"{len(analogs)} analogs from active prototypes")
 
 # Load validated MIC data
 df = pd.read_csv("data/validated/hydramp.csv")
@@ -166,7 +226,7 @@ If you use these datasets, please cite the original papers for each method.
 
 ## 🔗 Related Resources
 
-- [Szczurek Lab Website](https://www.helmholtz-munich.de/en/aih/ewa-szczurek) — AI in Healthcare, Helmholtz Munich
-- [Szczurek Lab Github](https://github.com/szczurek-lab/) — Szczurek lab methods
-- [HydrAMP Web Server](https://hydramp.mimuw.edu.pl/) — Online AMP generation tool
-- [OmegAMP](https://github.com/szczurek-lab/omegamp) — Targeted AMP generation framework
+- [Szczurek Lab Website](https://www.helmholtz-munich.de/en/aih/ewa-szczurek) - AI in Healthcare, Helmholtz Munich
+- [Szczurek Lab Github](https://github.com/szczurek-lab/) - Szczurek lab methods
+- [HydrAMP Web Server](https://hydramp.mimuw.edu.pl/) - Online AMP generation tool
+- [OmegAMP](https://github.com/szczurek-lab/omegamp) - Targeted AMP generation framework
