@@ -122,11 +122,7 @@ amp-generation-benchmark/
 │   │   ├── omegamp-u.fasta
 │   │   ├── hydramp.fasta
 │   │   └── ...
-│   ├── analog/                 # Analog generation outputs (FASTA, split by prototype set)
-│   │   ├── omegamp-a-active.fasta
-│   │   ├── omegamp-a-inactive.fasta
-│   │   ├── hydramp-c5-active.fasta
-│   │   ├── hydramp-c5-inactive.fasta
+│   ├── analog/                 # Analog generation outputs (FASTA)
 │   │   └── ...
 │   └── validated/              # Experimentally validated MICs (CSV)
 │       ├── hydramp.csv
