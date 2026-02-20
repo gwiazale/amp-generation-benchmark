@@ -36,3 +36,10 @@ hydramp-c2.5,HydrAMP (c=2.5),analog,2053,Conditional VAE analog generation with 
 hydramp-c2.5,HydrAMP (c=2.5),analog,754,Conditional VAE analog generation with creativity=2.5,10.1038/s41467-023-36994-z,https://github.com/szczurek-lab/hydramp,szczurek,,,,inactive
 hydramp-c5,HydrAMP (c=5),analog,2664,Conditional VAE analog generation with creativity=5 (most creative),10.1038/s41467-023-36994-z,https://github.com/szczurek-lab/hydramp,szczurek,,,,active
 hydramp-c5,HydrAMP (c=5),analog,1024,Conditional VAE analog generation with creativity=5 (most creative),10.1038/s41467-023-36994-z,https://github.com/szczurek-lab/hydramp,szczurek,,,,inactive
+pepglider,PepGlider,denovo,5507,Multi-property regularized VAE generation from the most promising area,10.1101/2025.10.13.682099,https://github.com/szczurek-lab/PepGlider,szczurek,,,,
+pepglider-alpha1-active,PepGlider (alpha=1),analog,1984,Multi-property regularized VAE analog generation using alpha = 1,10.1101/2025.10.13.682100,https://github.com/szczurek-lab/PepGlider,szczurek,,,,active
+pepglider-alpha1-inactive,PepGlider (alpha=1),analog,2444,Multi-property regularized VAE analog generation using alpha = 1,10.1101/2025.10.13.682101,https://github.com/szczurek-lab/PepGlider,szczurek,,,,inactive
+pepglider-alpha2.5-active,PepGlider (alpha=2.5),analog,3278,Multi-property regularized VAE analog generation using alpha = 2.5,10.1101/2025.10.13.682102,https://github.com/szczurek-lab/PepGlider,szczurek,,,,active
+pepglider-alpha2.5-inactive,PepGlider (alpha=2.5),analog,3616,Multi-property regularized VAE analog generation using alpha = 2.5,10.1101/2025.10.13.682103,https://github.com/szczurek-lab/PepGlider,szczurek,,,,inactive
+pepglider-alpha5-active,PepGlider (alpha=5),analog,4247,Multi-property regularized VAE analog generation using alpha = 5,10.1101/2025.10.13.682104,https://github.com/szczurek-lab/PepGlider,szczurek,,,,active
+pepglider-alpha5-inactive,PepGlider (alpha=5),analog,4118,Multi-property regularized VAE analog generation using alpha = 5,10.1101/2025.10.13.682105,https://github.com/szczurek-lab/PepGlider,szczurek,,,,inactive

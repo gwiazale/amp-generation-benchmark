@@ -36,6 +36,9 @@ Each method contributes two FASTA files in `data/analog/`: one for active protot
 | `hydramp-c1-active.fasta` | HydrAMP (c=1) | 708 | Conditional VAE, creativity=1 |
 | `hydramp-c2.5-active.fasta` | HydrAMP (c=2.5) | 2,053 | Conditional VAE, creativity=2.5 |
 | `hydramp-c5-active.fasta` | HydrAMP (c=5) | 2,664 | Conditional VAE, creativity=5 |
+| `pepglider-alpha1-active.fasta` | PepGlider (alpha=1) | 1,984 | Multi-property regularized VAE analog generation using alpha=1 |
+| `pepglider-alpha2.5-active.fasta` | PepGlider (alpha=2.5) | 3,278 | Multi-property regularized VAE analog generation using alpha=2.5 |
+| `pepglider-alpha5-active.fasta` | PepGlider (alpha=5) | 4,247 | Multi-property regularized VAE analog generation using alpha=5 |
 
 #### Inactive prototype analogs
 
@@ -48,6 +51,9 @@ Each method contributes two FASTA files in `data/analog/`: one for active protot
 | `hydramp-c1-inactive.fasta` | HydrAMP (c=1) | 253 | Conditional VAE, creativity=1 |
 | `hydramp-c2.5-inactive.fasta` | HydrAMP (c=2.5) | 754 | Conditional VAE, creativity=2.5 |
 | `hydramp-c5-inactive.fasta` | HydrAMP (c=5) | 1,024 | Conditional VAE, creativity=5 |
+| `pepglider-alpha1-inactive.fasta` | PepGlider (alpha=1) | 2,444 | Multi-property regularized VAE analog generation using alpha=1 |
+| `pepglider-alpha2.5-inactive.fasta` | PepGlider (alpha=2.5) | 3,616 | Multi-property regularized VAE analog generation using alpha=2.5 |
+| `pepglider-alpha5-inactive.fasta` | PepGlider (alpha=5) | 4,118 | Multi-property regularized VAE analog generation using alpha=5 |
 
 #### Analog FASTA format
 
@@ -226,3 +232,4 @@ If you use these datasets, please cite the original papers for each method.
 - [Szczurek Lab Github](https://github.com/szczurek-lab/) - Szczurek lab methods
 - [HydrAMP Web Server](https://hydramp.mimuw.edu.pl/) - Online AMP generation tool
 - [OmegAMP](https://github.com/szczurek-lab/omegamp) - Targeted AMP generation framework
+- [PepGlider](https://github.com/szczurek-lab/PepGlider) - AMP generarion framowork using their AMP property regularized dimensions
